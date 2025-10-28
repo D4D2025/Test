@@ -14,6 +14,8 @@ import os
 import sys
 import time
 
+import subprocess, time, os
+
 # --------------------------------------------------------------------
 # Determine script directory for safe file lookup
 # --------------------------------------------------------------------
@@ -140,7 +142,7 @@ def show_popup_after_delay():
         popup.geometry("400x300")
         popup.configure(bg="white")
 
-        img_path = os.path.join(SCRIPT_DIR, "your_image.png")
+        img_path = os.path.join(SCRIPT_DIR, "tony1.png")
         img = PhotoImage(file=img_path)
         img_label = Label(popup, image=img, bg="white")
         img_label.image = img
@@ -162,7 +164,15 @@ def show_popup_after_delay():
         print(f"[Popup failed] {e}")
 
 # Start popup in background thread (so it doesn't block map opening)
-Thread(target=show_popup_after_delay, daemon=True).start()
+#Thread(target=show_popup_after_delay, daemon=True).start()
+
+def delayed_popup():
+    glasgow_moves = next(m for d, m in legs if d == "Glasgow")
+    total_delay = (glasgow_moves * 2 + 6) * 5  # seconds
+    print(f"[Popup scheduled] Showing after {total_delay} seconds")
+    time.sleep(total_delay)
+    subprocess.Popen([sys.executable, os.path.join(SCRIPT_DIR, "popup_motivation.py")])
+Thread(target=delayed_popup, daemon=True).start()
 
 # --------------------------------------------------------------------
 # Build the Plotly animation
